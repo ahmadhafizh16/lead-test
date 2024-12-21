@@ -14,15 +14,7 @@ abstract class Controller
             throw new \Exception('Invalid transformer class', 500);
         }
 
-        $response = [];
-      
-        if (is_iterable($data)) {
-            $response = Arr::map($data, function ($value) use ($transformer) {
-                return $transformer->transform($value);
-            });
-        } else {
-            $response = $transformer->transform($data);
-        }
+        $response = $transformer->transform($data);
         
         return response()->json($response, $code);
     }
