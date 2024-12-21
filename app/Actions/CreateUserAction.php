@@ -21,7 +21,7 @@ class CreateUserAction
      */
     public function run(CreateUserRequest $request): User
     {
-        $data = $request->toArray();
+        $data = $request->only(['email', 'password', 'name']);
 
         return $this->createUserTask->run($data);
     }
