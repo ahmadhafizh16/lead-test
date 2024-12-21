@@ -1,66 +1,150 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+This project demonstrates the creation of a REST API using Laravel v11 with event-driven architecture and email services. The application fulfills the following requirements:
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+- **Create User API**
+- **Get Users API**
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 💻 Tech Stack
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- **Framework**: Laravel v11
+- **Email Testing**: Mailpit
+- **Queue Mechanism**: Laravel Queues with a PostgreSQL Driver
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## 🚀 Features
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+1. **Create User API**
+    - Endpoint: `POST /api/users`
+    - Functionality:
+        - Adds a new user to the database.
+        - Sends two emails:
+            1. Confirmation email to the new user.
+            2. Notification email to the system administrator.
+        - Excludes the password field in the response.
+    - Example Request Input:
+        ```json
+        {
+          "email": "example@example.com",
+          "password": "securepassword",
+          "name": "John Doe"
+        }
+        ```
+    - Example Response:
+        ```json
+        {
+          "id": 123,
+          "email": "example@example.com",
+          "name": "John Doe",
+          "created_at": "2024-11-25T12:34:56Z"
+        }
+        ```
+    - Example Request from Postman
+    
+      ![image](https://github.com/user-attachments/assets/b73d6bfd-59c3-4729-8423-e5b9f059e7f6)
+    - Example Email received after creating new user
+    
+      ![image](https://github.com/user-attachments/assets/8080e5ad-eff0-49b6-9757-42e46bec959f)
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+2. **Get Users API**
+    - Endpoint: `GET /api/users`
+    - Functionality:
+        - Retrieves a paginated list of active users.
+        - Supports filtering by `search` (matches name or email).
+        - Allows sorting by `sortBy` (name, email, created_at) with a default of `created_at`.
+        - Excludes the password field in the response.
+        - Includes `orders_count` representing the total number of orders per user.
+    - Example Request Input:
+        ```
+        ?search=John&page=1&sortBy=name
+        ```
+    - Example Response:
+        ```json
+        {
+          "page": 1,
+          "users": [
+            {
+              "id": 123,
+              "email": "example@example.com",
+              "name": "John Doe",
+              "created_at": "2024-11-25T12:34:56Z",
+              "orders_count": 10
+            },
+            {
+              "id": 124,
+              "email": "another@example.com",
+              "name": "Jane Smith",
+              "created_at": "2024-11-24T11:20:30Z",
+              "orders_count": 5
+            }
+          ]
+        }
+        ```
+   - Example Request from Postman
+      
+      ![image](https://github.com/user-attachments/assets/a5ffc577-448b-4e40-9561-3ec4668e3c35)
 
-## Laravel Sponsors
+   - Example Request from Postman using Search Query
+   
+      ![image](https://github.com/user-attachments/assets/0e6de44f-4b06-43f2-b623-4cbad384ea2c)
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+---
 
-### Premium Partners
+## 📦 Database Structure
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+### Users Table
+- `id` (INT, Primary Key, Auto Increment)
+- `email` (VARCHAR, 255, Unique, Not Null)
+- `password` (VARCHAR, 255, Not Null)
+- `name` (VARCHAR, 255, Not Null)
+- `active` (BOOLEAN, Default: true)
+- `created_at` (DATETIME, Default: Current Timestamp)
 
-## Contributing
+### Orders Table
+- `id` (INT, Primary Key, Auto Increment)
+- `user_id` (INT, Foreign Key to `users.id`)
+- `created_at` (DATETIME, Default: Current Timestamp)
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+---
 
-## Code of Conduct
+## 🛠️ Setup Instructions
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+1. **Clone the Repository**
+    ```bash
+    git clone https://github.com/ahmadhafizh16/lead-test.git
+    cd lead-test
+    ```
 
-## Security Vulnerabilities
+2. **Install Dependencies**
+    ```bash
+    composer install
+    ```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+3. **Environment Configuration**
+    I have copy configured env for this test to `.env.example`, so just copy the `.env.example` to `.env` for convenience.
+    ```bash
+    cp .env.example .env
+    ```
 
-## License
+4. **Using docker compose to start the services**
+    ```bash
+    docker compose up -d
+    ```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+5. **Run Migrations**
+   From inside docker container run 
+    ```bash
+    php artisan migrate
+    ```
+
+6. **Queue Worker**
+    Start the queue worker to process email jobs run this from inside docker container:
+    ```bash
+    php artisan queue:work
+    ```
+
+7. **Done**
+    - Visit `http://localhost` to see Laravel app.
+    - Visit `http://localhost:8025` to see captured emails.
