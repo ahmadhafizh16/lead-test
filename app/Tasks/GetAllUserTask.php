@@ -8,11 +8,13 @@ use Illuminate\Pagination\LengthAwarePaginator;
 class GetAllUserTask
 {
     /**
-     * Get Paginated User data.
+     * Get Paginated user data
      *
-     * @param array $data
+     * @param integer $perPage
+     * @param string $search
+     * @param string $orderby
+     * @param string $order
      * @return LengthAwarePaginator
-     *
      */
     public function run(
         int $perPage = 10,
